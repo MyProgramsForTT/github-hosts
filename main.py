@@ -29,7 +29,12 @@ def read_host(ip):
     try:
         for x in f.readlines():
             if "github" in x:
-                pass
+                if "#github" in x:
+                    continue
+                else:
+                    if "#" not in x:
+                        continue
+                new_hosts.append(x)
             else:
                 new_hosts.append(x)
     except:
