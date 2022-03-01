@@ -61,7 +61,7 @@ def req_ip():
                'https://ipaddress.com/website/github.githubassets.com',
                'https://ipaddress.com/website/avatars.githubusercontent.com',
                'https://ipaddress.com/website/api.github.com',
-               'https://ipaddress.com/website/api.github.com']
+               'https://ipaddress.com/website/gist.github.com']
     th = []
     ip = []
     ip.append("#github begin\n")
