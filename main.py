@@ -13,7 +13,7 @@ def req_http(http_list_one,ip):
     soup = BeautifulSoup(res.text,'lxml')
     a = http_list_one.split('/')[4]
     for item in soup.find('ul',attrs={'class':'comma-separated'}).children:
-        ip.append((item.string + ' ' + a + '\n'))
+        ip.append(f'{item.string} {a}' + '\n')
     
 def read_host(ip):
     path = "C:\Windows\System32\drivers\etc"
@@ -25,23 +25,20 @@ def read_host(ip):
         f = open("hosts","r+",encoding="utf-8")
     except:
         pass
-    
+
     try:
-        for x in f.readlines():
-            if "github" in x:
-                if "#github" in x:
-                    continue
-                else:
-                    if "#" not in x:
-                        continue
-                new_hosts.append(x)
-            else:
-                new_hosts.append(x)
+        new_hosts.extend(
+            x
+            for x in f
+            if "github" not in x
+            or ("#github" in x or "#" in x)
+            and "#github" not in x
+        )
+
     except:
         pass
     f.close()
-    for x in ip:
-        new_hosts.append(x)
+    new_hosts.extend(iter(ip))
     try:
         f = open("hosts","w+",encoding="utf-8")
     except:
@@ -49,7 +46,7 @@ def read_host(ip):
     for x in new_hosts:
         f.write(x)
     f.close()
-    
+
     ctypes.windll.shell32.ShellExecuteW(None, "open", "cmd.exe", cmd, None, 1)
     
     
@@ -63,8 +60,7 @@ def req_ip():
                'https://ipaddress.com/website/api.github.com',
                'https://ipaddress.com/website/gist.github.com']
     th = []
-    ip = []
-    ip.append("#github begin\n")
+    ip = ["#github begin\n"]
     for x in http_list:
         t = threading.Thread(target=req_http,args=(x,ip,))
         t.start()
@@ -76,20 +72,18 @@ def req_ip():
     
 
 if __name__=='__main__':
-
     if ctypes.windll.shell32.IsUserAnAdmin():
         print("正在获取github host...")
         ip = req_ip()
         read_host(ip)
         print("完成，5秒后自动关闭")
         time.sleep(5)
-        
-    else:
-        if sys.version_info[0] == 3:
-            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
-            sys.exit(0)
-        else:#in python2.x
-            ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)
+
+    elif sys.version_info[0] == 3:
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+        sys.exit(0)
+    else:#in python2.x
+        ctypes.windll.shell32.ShellExecuteW(None, u"runas", unicode(sys.executable), unicode(__file__), None, 1)
 
 
     
